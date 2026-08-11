@@ -1,0 +1,6 @@
+{
+  "name": "Biz Expert's Junction",
+  "description": "Tailored manpower and recruitment solutions across India",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
