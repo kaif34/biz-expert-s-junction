@@ -16,23 +16,15 @@ import {
   Workflow,
 } from "lucide-react";
 
-import { CLIENTS } from "./data";
-import { CurvedLoop } from "./CurvedLoop";
+import { BrandLogoSection } from "./CompanyLogos";
 import { MagneticButton, Reveal, SectionHeading, TiltCard } from "./motion-primitives";
 
 export function CompanyIntro() {
-  const curvedText = CLIENTS.join(" • ") + " • ";
-
   return (
-    <section className="py-12 sm:py-20 relative overflow-hidden bg-white">
-      {/* Top Interactive Curved Loop Marquee */}
-      <div className="mb-10 sm:mb-14 overflow-hidden">
-        <CurvedLoop
-          marqueeText={curvedText}
-          speed={1.6}
-          curveAmount={35}
-          className="fill-slate-800 tracking-widest text-xl sm:text-2xl"
-        />
+    <section className="pb-12 pt-0 sm:pb-20 sm:pt-0 relative overflow-hidden bg-white">
+      {/* Top Brand Logo Section matching screenshot */}
+      <div className="mb-10 sm:mb-14">
+        <BrandLogoSection title="Clients We Served" />
       </div>
 
       <div className="mx-auto w-full max-w-7xl px-6 sm:px-10">

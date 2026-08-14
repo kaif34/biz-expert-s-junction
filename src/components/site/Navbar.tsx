@@ -66,18 +66,25 @@ export function Navbar() {
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
-    return location.pathname.startsWith(path);
+    const basePath = path.split("#")[0];
+    return location.pathname === basePath;
   };
 
   const isGroupActive = (item: (typeof NAV_ITEMS)[number]) => {
+    if (item.path === "/") return location.pathname === "/";
+    if (location.pathname === item.path || location.pathname.startsWith(item.path)) {
+      return true;
+    }
     if ("dropdown" in item && item.dropdown) {
-      return item.dropdown.some((sub) => location.pathname.startsWith(sub.path));
+      return item.dropdown.some((sub) => {
+        const basePath = sub.path.split("#")[0];
+        return location.pathname === basePath;
+      });
     }
     if ("isServicesDropdown" in item && item.isServicesDropdown) {
       return location.pathname.startsWith("/services");
     }
-    if (item.path === "/") return location.pathname === "/";
-    return location.pathname.startsWith(item.path);
+    return false;
   };
 
   return (

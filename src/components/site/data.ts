@@ -58,6 +58,7 @@ export const NAV_ITEMS = [
       },
     ],
   },
+  { path: "/careers", label: "Careers" },
   { path: "/contact", label: "Contact" },
 ] as const;
 
@@ -377,3 +378,207 @@ export const CLIENTS = [
 ];
 
 export const SERVICE_OPTIONS = SERVICES.map((s) => s.title);
+
+export interface JobOpening {
+  id: string;
+  title: string;
+  department: string;
+  location: string;
+  type: "Full-time" | "Hybrid" | "Remote" | "Contract";
+  experience: string;
+  salary: string;
+  postedDate: string;
+  description: string;
+  responsibilities: string[];
+  requirements: string[];
+  skills: string[];
+}
+
+export const CAREER_JOBS: JobOpening[] = [
+  {
+    id: "job-1",
+    title: "Senior IT Recruitment Specialist",
+    department: "IT & Software",
+    location: "Ahmedabad, Gujarat (Hybrid)",
+    type: "Full-time",
+    experience: "3 - 6 Years",
+    salary: "₹6,00,000 - ₹10,00,000 P.A.",
+    postedDate: "2 days ago",
+    description: "Lead end-to-end recruitment drives for tier-1 tech client mandates including Full-Stack Developers, Cloud Architects, and AI Engineers.",
+    responsibilities: [
+      "Source and screen tech candidates via LinkedIn Recruiter, GitHub, and internal talent pools.",
+      "Conduct initial technical pre-screening and candidate background evaluations.",
+      "Manage key account relationships and maintain high SLA candidate turnaround times.",
+      "Track and report sourcing metrics, conversion ratios, and hiring funnels."
+    ],
+    requirements: [
+      "Proven experience in IT talent acquisition or technical recruiting agency.",
+      "Strong understanding of tech stacks (React, Node.js, Python, Java, Cloud, DevOps).",
+      "Excellent negotiation, candidate engagement, and communication skills."
+    ],
+    skills: ["IT Sourcing", "Tech Screening", "LinkedIn Recruiter", "Account Management", "Talent Acquisition"]
+  },
+  {
+    id: "job-2",
+    title: "SAP Talent Acquisition Lead",
+    department: "SAP & Enterprise Solutions",
+    location: "Ahmedabad / Remote",
+    type: "Full-time",
+    experience: "4 - 8 Years",
+    salary: "₹8,00,000 - ₹14,00,000 P.A.",
+    postedDate: "1 day ago",
+    description: "Drive niche executive search mandates for SAP S/4HANA, FICO, MM, SD, and Basis consultants for enterprise transformation projects.",
+    responsibilities: [
+      "Head specialized sourcing for SAP functional & technical consultants across India.",
+      "Build pipeline for contract-to-hire and permanent SAP deployment roles.",
+      "Collaborate with client HR heads to align technical requirements with budget expectations."
+    ],
+    requirements: [
+      "Minimum 4 years hands-on sourcing experience for ERP & SAP modules.",
+      "Deep understanding of SAP implementation lifecycles and certifications.",
+      "Strong network of SAP certified professionals across India."
+    ],
+    skills: ["SAP S/4HANA", "ERP Hiring", "Executive Search", "Niche Sourcing", "Client Servicing"]
+  },
+  {
+    id: "job-3",
+    title: "Bulk Sourcing & Campus Hiring Lead",
+    department: "Non-IT & Operations",
+    location: "Gujarat / On-site Travel",
+    type: "Full-time",
+    experience: "2 - 5 Years",
+    salary: "₹4,50,000 - ₹7,50,000 P.A.",
+    postedDate: "3 days ago",
+    description: "Execute large-scale volume hiring drives for manufacturing, supply chain, and retail client plants across Western India.",
+    responsibilities: [
+      "Organize walk-in interview drives and campus recruitment programs in engineering & diploma colleges.",
+      "Manage field recruiters and coordinate candidate onboarding logistics.",
+      "Ensure compliance with client labor SLAs and documentation guidelines."
+    ],
+    requirements: [
+      "Experience conducting high-volume or blue-collar/grey-collar recruitment drives.",
+      "Strong operational leadership and multi-location field execution skills.",
+      "Willingness to travel for regional recruitment camps."
+    ],
+    skills: ["Bulk Recruitment", "Campus Hiring", "Field Sourcing", "Vendor Management", "Onboarding"]
+  },
+  {
+    id: "job-4",
+    title: "Executive Talent Partner (Healthcare & Pharma)",
+    department: "Healthcare & Life Sciences",
+    location: "Ahmedabad, Gujarat",
+    type: "Full-time",
+    experience: "3 - 7 Years",
+    salary: "₹5,50,000 - ₹9,50,000 P.A.",
+    postedDate: "Just now",
+    description: "Manage senior and specialized hiring for Pharmaceutical R&D scientists, QC/QA leads, and medical affairs positions.",
+    responsibilities: [
+      "Partner with pharma & healthcare enterprises for specialized scientific placements.",
+      "Screen candidates against regulatory, GMP, and R&D technical standards.",
+      "Map industry talent pools across major pharma hubs in Gujarat and Maharashtra."
+    ],
+    requirements: [
+      "Background in Life Sciences, Pharma, or Healthcare recruitment.",
+      "Comprehensive knowledge of pharma industry roles and salary benchmarks.",
+      "Track record of successfully placing mid-to-senior pharma professionals."
+    ],
+    skills: ["Pharma Recruitment", "R&D Sourcing", "Executive Search", "Headhunting", "Client Relations"]
+  },
+  {
+    id: "job-5",
+    title: "Business Development Manager (Staffing & Search)",
+    department: "Sales & Business Development",
+    location: "Ahmedabad, Gujarat (Hybrid)",
+    type: "Full-time",
+    experience: "3 - 8 Years",
+    salary: "₹7,00,000 - ₹12,00,000 P.A. + Uncapped Incentives",
+    postedDate: "4 days ago",
+    description: "Drive business acquisition, client onboarding, and corporate partnerships for permanent staffing and executive search contracts.",
+    responsibilities: [
+      "Identify enterprise prospects, pitch recruitment solutions, and close MSAs.",
+      "Build long-term relationships with CHROs, HR VPs, and Talent Acquisition Heads.",
+      "Achieve monthly and quarterly revenue targets with attractive uncapped commission."
+    ],
+    requirements: [
+      "Proven B2B sales track record in HR services, staffing, or consulting.",
+      "Strong professional network across corporate leadership and HR circles.",
+      "Exceptional presentation, contract negotiation, and closure skills."
+    ],
+    skills: ["B2B Sales", "Client Acquisition", "Contract Negotiation", "Key Account Management", "HR Services"]
+  },
+  {
+    id: "job-6",
+    title: "HR Coordinator & Payroll Associate",
+    department: "HR & Talent Acquisition",
+    location: "Ahmedabad, Gujarat",
+    type: "Full-time",
+    experience: "1 - 3 Years",
+    salary: "₹3,50,000 - ₹5,00,000 P.A.",
+    postedDate: "5 days ago",
+    description: "Support internal HR operations, candidate onboarding documentation, background verification, and contractual payroll processing.",
+    responsibilities: [
+      "Coordinate candidate background checks, offer letters, and document verification.",
+      "Maintain HRIS records, attendance logs, and monthly client billing data.",
+      "Assist in employee engagement activities and internal compliance audits."
+    ],
+    requirements: [
+      "Degree in HR, Business Administration, or related discipline.",
+      "Familiarity with MS Excel, HRIS systems, and payroll basics.",
+      "High attention to detail and strong organizational skills."
+    ],
+    skills: ["HR Operations", "Background Verification", "Payroll Support", "Documentation", "HRIS"]
+  }
+];
+
+export const CAREER_BENEFITS = [
+  {
+    title: "Fast-Track Career Growth",
+    desc: "Performers get clear promotion paths with merit-based appraisals every 6 months.",
+    icon: "TrendingUp"
+  },
+  {
+    title: "Uncapped Commission & Incentives",
+    desc: "Industry-best quarterly incentive structures for every successful candidate placement.",
+    icon: "Coins"
+  },
+  {
+    title: "Hybrid & Flexible Work Model",
+    desc: "Work-life balance with flexible working hours and hybrid remote options.",
+    icon: "Building"
+  },
+  {
+    title: "Upskilling & AI Sourcing Tools",
+    desc: "Access to premium sourcing platforms, LinkedIn Recruiter, and AI talent mapping software.",
+    icon: "Sparkles"
+  },
+  {
+    title: "Comprehensive Health Cover",
+    desc: "Health insurance for employees and immediate family members plus wellness perks.",
+    icon: "ShieldCheck"
+  },
+  {
+    title: "Vibrant Work Culture",
+    desc: "Collaborative teams, regular celebration events, offsites, and team appreciation rewards.",
+    icon: "Heart"
+  }
+];
+
+export const CAREER_FAQS = [
+  {
+    q: "How long does the hiring process take after submitting an application?",
+    a: "Our HR team reviews applications within 24 to 48 hours. If shortlisted, candidates typically complete the 3-round interview process within 5 to 7 business days."
+  },
+  {
+    q: "Do you offer remote or hybrid work options?",
+    a: "Yes! Many of our recruiter, sourcing, and BD roles support hybrid schedules (combining office collaboration with remote work days)."
+  },
+  {
+    q: "What training support is provided for new recruiters?",
+    a: "Every new team member undergoes a 2-week structured onboarding program covering modern AI sourcing tools, client management, and domain-specific headhunting techniques."
+  },
+  {
+    q: "Can I submit my CV if I don't see an exact role matching my experience?",
+    a: "Absolutely! You can upload your CV using our General Resume Submission form. Our talent network team matches incoming profiles with upcoming internal and client mandates daily."
+  }
+];
+

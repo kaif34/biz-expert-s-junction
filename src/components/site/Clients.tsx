@@ -1,11 +1,10 @@
 import { Star, Quote } from "lucide-react";
 
-import { CLIENTS, TESTIMONIALS } from "./data";
+import { TESTIMONIALS } from "./data";
+import { BrandLogoSection } from "./CompanyLogos";
 import { Reveal, SectionHeading, TiltCard } from "./motion-primitives";
 
 export function Clients() {
-  const row = [...CLIENTS, ...CLIENTS];
-
   return (
     <section id="clients" className="overflow-hidden py-20 sm:py-28">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
@@ -54,36 +53,10 @@ export function Clients() {
         </div>
       </div>
 
-      {/* Marquee Banner */}
+      {/* Marquee Banner with Authentic Company Logo Images */}
       <div className="mt-16">
-        <p className="text-center text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6">
-          Organizations our consultants have delivered mandates for
-        </p>
-        <div className="marquee-mask space-y-4">
-          <div className="group flex w-max animate-marquee gap-4 hover:[animation-play-state:paused]">
-            {row.map((name, i) => (
-              <ClientCard key={`a-${name}-${i}`} name={name} />
-            ))}
-          </div>
-          <div className="flex w-max animate-marquee gap-4 [animation-direction:reverse] hover:[animation-play-state:paused]">
-            {row.map((name, i) => (
-              <ClientCard key={`b-${name}-${i}`} name={name} />
-            ))}
-          </div>
-        </div>
+        <BrandLogoSection title="ORGANIZATIONS OUR CONSULTANTS HAVE DELIVERED MANDATES FOR" />
       </div>
-
-      <p className="mx-auto mt-8 max-w-xl px-4 text-center text-xs text-muted-foreground">
-        Swipe or hover over logos to pause.
-      </p>
     </section>
-  );
-}
-
-function ClientCard({ name }: { name: string }) {
-  return (
-    <span className="grid h-16 w-40 shrink-0 place-items-center rounded-2xl border border-border/80 bg-card px-5 text-center text-xs font-extrabold uppercase tracking-tight text-primary/80 shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:border-accent/50 hover:text-accent">
-      {name}
-    </span>
   );
 }

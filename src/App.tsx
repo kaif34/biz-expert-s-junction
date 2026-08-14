@@ -11,6 +11,7 @@ import { MissionVisionPage } from "./pages/MissionVisionPage";
 import { ProcessPage } from "./pages/ProcessPage";
 import { WhyUsPage } from "./pages/WhyUsPage";
 import { TermsPage } from "./pages/TermsPage";
+import { CareersPage } from "./pages/CareersPage";
 
 export default function App() {
   return (
@@ -20,6 +21,9 @@ export default function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/careers" element={<CareersPage />} />
+        <Route path="/carrier" element={<CareersPage />} />
+        <Route path="/careers-page" element={<CareersPage />} />
         <Route path="/clients" element={<ClientsPage />} />
         <Route path="/industries" element={<IndustriesPage />} />
         <Route path="/mission-vision" element={<MissionVisionPage />} />

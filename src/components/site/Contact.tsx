@@ -327,12 +327,12 @@ export function Footer() {
           <ul className="mt-4 grid grid-cols-2 gap-2">
             {NAV_LINKS.map((l) => (
               <li key={l.id}>
-                <a
-                  href={`#${l.id}`}
+                <Link
+                  to={l.path}
                   className="text-sm text-muted-foreground transition-colors hover:text-accent"
                 >
                   {l.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
