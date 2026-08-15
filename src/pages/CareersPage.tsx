@@ -473,24 +473,26 @@ export function CareersPage() {
             <div className="overflow-hidden rounded-3xl border border-accent/20 bg-gradient-to-br from-card to-brand-soft/30 shadow-[var(--shadow-soft)]">
               <div className="grid lg:grid-cols-2">
                 {/* Left content */}
-                <div className="p-8 sm:p-12">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-brand-soft px-3.5 py-1 text-[0.7rem] font-extrabold uppercase tracking-widest text-accent">
-                    <UserCheck className="size-3.5" /> Talent Network
-                  </span>
-                  <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-primary sm:text-3xl lg:text-4xl">
+                <div className="flex flex-col justify-center p-8 sm:p-12">
+                  <div className="w-fit">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-brand-soft px-3.5 py-1 text-[0.7rem] font-extrabold uppercase tracking-widest text-accent">
+                      <UserCheck className="size-3.5" /> Talent Network
+                    </span>
+                  </div>
+                  <h2 className="mt-5 text-2xl font-extrabold tracking-tight text-primary sm:text-3xl lg:text-4xl">
                     No matching role right now?
                   </h2>
                   <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                     We're constantly expanding across IT, SAP, Executive Search & Manufacturing. Drop your CV — our hiring managers will reach out when the right position opens.
                   </p>
 
-                  <ul className="mt-6 space-y-3">
+                  <ul className="mt-8 space-y-3.5">
                     {[
                       "Direct review by Biz Expert's Junction HR leads",
                       "Priority matching for future internal openings",
                       "100% confidential resume handling & data privacy",
                     ].map((pt) => (
-                      <li key={pt} className="flex items-center gap-2.5 text-xs font-medium text-primary/80">
+                      <li key={pt} className="flex items-center gap-3 text-xs font-medium text-primary/80">
                         <CheckCircle2 className="size-4 shrink-0 text-accent" />
                         {pt}
                       </li>
@@ -498,7 +500,7 @@ export function CareersPage() {
                   </ul>
 
                   {/* Decorative avatars */}
-                  <div className="mt-8 flex items-center gap-3">
+                  <div className="mt-10 flex items-center gap-3">
                     <div className="flex -space-x-2.5">
                       {["bg-blue-400", "bg-purple-400", "bg-emerald-400", "bg-amber-400"].map((c, i) => (
                         <div key={i} className={cn("size-8 rounded-full border-2 border-white", c)} />
@@ -512,66 +514,66 @@ export function CareersPage() {
 
                 {/* Right form */}
                 <div className="border-t border-accent/10 bg-card/60 p-8 sm:p-12 lg:border-l lg:border-t-0">
-                  <form onSubmit={handleTalentSubmit} className="space-y-4">
-                    <h3 className="text-base font-extrabold text-primary">Drop Your Resume</h3>
+                  <form onSubmit={handleTalentSubmit} className="space-y-5">
+                    <h3 className="text-lg font-extrabold text-primary mb-2">Drop Your Resume</h3>
 
                     <div>
-                      <label className="mb-1 block text-xs font-bold text-primary">Full Name *</label>
+                      <label className="mb-1.5 block text-xs font-bold text-primary">Full Name *</label>
                       <input
                         type="text"
                         required
                         placeholder="e.g. Rahul Sharma"
                         value={talentData.name}
                         onChange={(e) => setTalentData({ ...talentData, name: e.target.value })}
-                        className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs text-primary placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition"
+                        className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-primary placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition"
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="mb-1 block text-xs font-bold text-primary">Email *</label>
+                        <label className="mb-1.5 block text-xs font-bold text-primary">Email *</label>
                         <input
                           type="email"
                           required
                           placeholder="you@example.com"
                           value={talentData.email}
                           onChange={(e) => setTalentData({ ...talentData, email: e.target.value })}
-                          className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs text-primary placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition"
+                          className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-primary placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition"
                         />
                       </div>
                       <div>
-                        <label className="mb-1 block text-xs font-bold text-primary">Phone *</label>
+                        <label className="mb-1.5 block text-xs font-bold text-primary">Phone *</label>
                         <input
                           type="tel"
                           required
                           placeholder="+91 98980 00000"
                           value={talentData.phone}
                           onChange={(e) => setTalentData({ ...talentData, phone: e.target.value })}
-                          className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs text-primary placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition"
+                          className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-primary placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-xs font-bold text-primary">Target Role / Domain</label>
+                      <label className="mb-1.5 block text-xs font-bold text-primary">Target Role / Domain</label>
                       <input
                         type="text"
                         placeholder="e.g. IT Recruiter, SAP Consultant, HR Manager"
                         value={talentData.role}
                         onChange={(e) => setTalentData({ ...talentData, role: e.target.value })}
-                        className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs text-primary placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition"
+                        className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-primary placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition"
                       />
                     </div>
 
                     {/* File upload */}
-                    <label className="block cursor-pointer">
-                      <span className="mb-1 block text-xs font-bold text-primary">Resume (PDF / DOCX)</span>
-                      <div className="flex items-center justify-center gap-3 rounded-xl border border-dashed border-border/70 bg-secondary/30 px-4 py-4 text-center transition-colors hover:border-accent/50 hover:bg-brand-soft/30">
-                        <Upload className="size-4 text-accent" />
-                        <span className="text-xs font-medium text-primary">
+                    <label className="block cursor-pointer pt-1">
+                      <span className="mb-2 block text-xs font-bold text-primary">Resume (PDF / DOCX)</span>
+                      <div className="flex flex-col items-center justify-center gap-2.5 rounded-xl border border-dashed border-border bg-secondary/30 px-4 py-8 text-center transition-colors hover:border-accent/50 hover:bg-brand-soft/30">
+                        <Upload className="size-6 text-accent mb-1" />
+                        <span className="text-sm font-bold text-primary">
                           {talentData.fileName || "Click to upload CV"}
                         </span>
-                        <span className="text-[0.65rem] text-muted-foreground">Max 5MB</span>
+                        <span className="text-[0.7rem] text-muted-foreground">Maximum file size: 5MB</span>
                       </div>
                       <input
                         type="file"
@@ -587,9 +589,9 @@ export function CareersPage() {
                     <button
                       type="submit"
                       disabled={isTalentSubmitting}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-xs font-bold text-white shadow-[var(--shadow-brand)] transition-all hover:bg-accent/90 disabled:opacity-50"
+                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 text-sm font-extrabold text-white shadow-[var(--shadow-brand)] transition-all hover:bg-accent/90 disabled:opacity-50"
                     >
-                      <Send className="size-3.5" />
+                      <Send className="size-4" />
                       {isTalentSubmitting ? "Submitting…" : "Submit to Talent Network"}
                     </button>
                   </form>
