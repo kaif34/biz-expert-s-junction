@@ -5,6 +5,9 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { cn } from "@/lib/utils";
+import { db } from "@/lib/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { sendContactInquiryEmails } from "@/lib/mailer";
 
 import { NAV_LINKS, SERVICE_OPTIONS } from "./data";
 import { Logo } from "./Logo";
@@ -51,7 +54,7 @@ export function Contact() {
     setErrors((prev) => ({ ...prev, [key]: undefined }));
   };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = schema.safeParse(values);
     if (!parsed.success) {
@@ -65,12 +68,27 @@ export function Contact() {
       return;
     }
     setSubmitting(true);
-    window.setTimeout(() => {
-      setSubmitting(false);
+    try {
+      // 1. Save inquiry into Firestore
+      await addDoc(collection(db, "inquiries"), {
+        ...values,
+        createdAt: serverTimestamp(),
+        status: "new"
+      });
+
+      // 2. Fire-and-forget: send emails in background, don't block form reset
+      sendContactInquiryEmails(values)
+        .catch((err) => console.error("[Mailer] Contact email failed:", err));
+
       setValues(EMPTY);
       window.sessionStorage.removeItem(DRAFT_KEY);
-      toast.success("Request received — our team will reach out within one business day.");
-    }, 700);
+      toast.success("Thank you! We've received your inquiry and will be in touch within one business day.");
+    } catch (error) {
+      console.error("Error submitting inquiry:", error);
+      toast.error("Failed to send message. Please try again or email us directly at info@bizexpertsjunction.com.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const field =

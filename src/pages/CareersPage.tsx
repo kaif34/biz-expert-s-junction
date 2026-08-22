@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "@/lib/firebase";
+import { sendJobApplicationEmails, sendTalentNetworkEmails } from "@/lib/mailer";
 import {
   ArrowRight,
   Briefcase,
@@ -8,6 +12,7 @@ import {
   ChevronUp,
   Clock,
   Coins,
+  ExternalLink,
   Filter,
   Heart,
   HelpCircle,
@@ -30,7 +35,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Footer } from "@/components/site/Contact";
 import { CursorGlow } from "@/components/site/CursorGlow";
 import { Navbar } from "@/components/site/Navbar";
-import { CAREER_BENEFITS, CAREER_FAQS, CAREER_JOBS, JobOpening } from "@/components/site/data";
+import { CAREER_BENEFITS, CAREER_FAQS, JobOpening } from "@/components/site/data";
 import { cn } from "@/lib/utils";
 
 const DEPARTMENTS = [
@@ -88,6 +93,8 @@ export function CareersPage() {
     message: "",
     fileName: "",
   });
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>({});
+  const [cvFile, setCvFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [talentData, setTalentData] = useState({
@@ -97,9 +104,44 @@ export function CareersPage() {
     role: "",
     fileName: "",
   });
+  const [talentFile, setTalentFile] = useState<File | null>(null);
   const [isTalentSubmitting, setIsTalentSubmitting] = useState(false);
 
-  const filteredJobs = CAREER_JOBS.filter((job) => {
+  const [dbJobs, setDbJobs] = useState<JobOpening[]>([]);
+
+  useEffect(() => {
+    const fetchDbJobs = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "jobs"));
+        const data = querySnapshot.docs.map(doc => {
+          const d = doc.data();
+          return {
+            id: doc.id,
+            department: d.department || "All Departments",
+            title: d.title || "Untitled Job",
+            skills: d.skills || [],
+            location: d.location || "India",
+            postedDate: d.postedDate || "Recently",
+            experience: d.experience || "Flexible",
+            type: d.type || "Full-time",
+            salary: d.salary || "Competitive",
+            description: d.description || "",
+            responsibilities: d.responsibilities || [],
+            requirements: d.requirements || [],
+            applyUrl: d.applyUrl || "",
+            companyLogo: d.companyLogo || "",
+            customFields: d.customFields || []
+          } as JobOpening;
+        });
+        setDbJobs(data);
+      } catch (err) {
+        console.error("Failed to fetch dynamic jobs", err);
+      }
+    };
+    fetchDbJobs();
+  }, []);
+
+  const filteredJobs = dbJobs.filter((job) => {
     const matchesDept =
       selectedDept === "All Departments" ||
       job.department.toLowerCase() === selectedDept.toLowerCase();
@@ -116,43 +158,98 @@ export function CareersPage() {
     setIsApplyModalOpen(true);
   };
 
-  const handleApplySubmit = (e: React.FormEvent) => {
+  const handleApplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fullName || !formData.email || !formData.phone) {
       toast.error("Please fill in all required fields.");
       return;
     }
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsApplyModalOpen(false);
-      toast.success(`Application submitted for ${selectedJob?.title}! We'll reach out within 24-48 hrs.`);
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        experience: "",
-        currentCtc: "",
-        expectedCtc: "",
-        noticePeriod: "",
-        message: "",
-        fileName: "",
+    try {
+      let resumeUrl = "";
+      if (cvFile) {
+        const storageRef = ref(storage, `resumes/${Date.now()}_${cvFile.name}`);
+        const snapshot = await uploadBytes(storageRef, cvFile);
+        resumeUrl = await getDownloadURL(snapshot.ref);
+      }
+
+      await addDoc(collection(db, "applications"), {
+        jobId: selectedJob?.id,
+        jobTitle: selectedJob?.title,
+        jobDepartment: selectedJob?.department,
+        ...formData,
+        customAnswers,
+        resumeUrl,
+        createdAt: serverTimestamp()
       });
-    }, 1200);
+
+      // Fire-and-forget: send emails in background, don't block form close
+      sendJobApplicationEmails({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        jobTitle: selectedJob?.title,
+        jobDepartment: selectedJob?.department,
+        experience: formData.experience,
+        noticePeriod: formData.noticePeriod,
+        message: formData.message,
+        resumeUrl,
+      }).catch((err) => console.error("[Mailer] Application email failed:", err));
+
+      toast.success(`Application submitted for ${selectedJob?.title}! A confirmation will be sent to your email.`);
+      setFormData({
+        fullName: "", email: "", phone: "", experience: "", currentCtc: "", expectedCtc: "", noticePeriod: "", message: "", fileName: "",
+      });
+      setCustomAnswers({});
+      setCvFile(null);
+      setIsApplyModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to submit application. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleTalentSubmit = (e: React.FormEvent) => {
+  const handleTalentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!talentData.name || !talentData.email || !talentData.phone) {
       toast.error("Please provide your name, email and phone number.");
       return;
     }
     setIsTalentSubmitting(true);
-    setTimeout(() => {
-      setIsTalentSubmitting(false);
-      toast.success("Added to Talent Network! We'll match your profile with upcoming openings.");
+    try {
+      let resumeUrl = "";
+      if (talentFile) {
+        const storageRef = ref(storage, `talent_network/${Date.now()}_${talentFile.name}`);
+        const snapshot = await uploadBytes(storageRef, talentFile);
+        resumeUrl = await getDownloadURL(snapshot.ref);
+      }
+
+      await addDoc(collection(db, "talent_network"), {
+        ...talentData,
+        resumeUrl,
+        createdAt: serverTimestamp()
+      });
+
+      // Fire-and-forget: send emails in background, don't block form close
+      sendTalentNetworkEmails({
+        name: talentData.name,
+        email: talentData.email,
+        phone: talentData.phone,
+        role: talentData.role,
+        resumeUrl,
+      }).catch((err) => console.error("[Mailer] Talent email failed:", err));
+
+      toast.success("Added to Talent Network! A confirmation will be sent to your email.");
       setTalentData({ name: "", email: "", phone: "", role: "", fileName: "" });
-    }, 1200);
+      setTalentFile(null);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to submit to Talent Network. Please try again.");
+    } finally {
+      setIsTalentSubmitting(false);
+    }
   };
 
   return (
@@ -224,7 +321,7 @@ export function CareersPage() {
               className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-4"
             >
               {[
-                { icon: Briefcase, label: "Open Roles", val: `${CAREER_JOBS.length}+` },
+                { icon: Briefcase, label: "Open Roles", val: `${dbJobs.length}+` },
                 { icon: Zap, label: "HR Review Time", val: "24–48 hrs" },
                 { icon: TrendingUp, label: "Appraisal Cycle", val: "Bi-Annual" },
                 { icon: Building2, label: "Work Mode", val: "Hybrid & Flex" },
@@ -337,9 +434,14 @@ export function CareersPage() {
                     <div className="p-6">
                       {/* Header row */}
                       <div className="flex items-start justify-between gap-3 mb-4">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-2.5 py-1 text-[0.65rem] font-bold text-accent border border-accent/15">
-                          {job.department}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          {job.companyLogo && (
+                            <img src={job.companyLogo} alt={`${job.title} logo`} className="w-8 h-8 rounded-md object-contain border border-border bg-white" />
+                          )}
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-2.5 py-1 text-[0.65rem] font-bold text-accent border border-accent/15">
+                            {job.department}
+                          </span>
+                        </div>
                         <span className="flex shrink-0 items-center gap-1 text-[0.65rem] text-muted-foreground">
                           <Clock className="size-3" /> {job.postedDate}
                         </span>
@@ -573,7 +675,7 @@ export function CareersPage() {
                         <span className="text-sm font-bold text-primary">
                           {talentData.fileName || "Click to upload CV"}
                         </span>
-                        <span className="text-[0.7rem] text-muted-foreground">Maximum file size: 5MB</span>
+                        <span className="text-[0.7rem] text-muted-foreground">Maximum file size: 2MB</span>
                       </div>
                       <input
                         type="file"
@@ -581,7 +683,14 @@ export function CareersPage() {
                         className="hidden"
                         onChange={(e) => {
                           const f = e.target.files?.[0];
-                          if (f) setTalentData({ ...talentData, fileName: f.name });
+                          if (f) {
+                            if (f.size > 2 * 1024 * 1024) {
+                              toast.error("File size must be 2MB or less.");
+                              return;
+                            }
+                            setTalentData({ ...talentData, fileName: f.name });
+                            setTalentFile(f);
+                          }
                         }}
                       />
                     </label>
@@ -678,17 +787,24 @@ export function CareersPage() {
             >
               {/* Modal header */}
               <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-border/60 bg-card/95 p-6 backdrop-blur-md">
-                <div>
-                  <span className="inline-block rounded-full bg-brand-soft px-2.5 py-0.5 text-[0.65rem] font-bold text-accent">
-                    {selectedJob.department}
-                  </span>
-                  <h2 className="mt-1.5 text-lg font-extrabold text-primary sm:text-xl">
-                    {selectedJob.title}
-                  </h2>
-                  <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[0.7rem] text-muted-foreground">
-                    <span className="flex items-center gap-1"><MapPin className="size-3 text-accent" />{selectedJob.location}</span>
-                    <span className="flex items-center gap-1"><Briefcase className="size-3 text-accent" />{selectedJob.type} · {selectedJob.experience}</span>
-                    <span className="flex items-center gap-1 font-bold text-primary"><IndianRupee className="size-3 text-accent" />{selectedJob.salary}</span>
+                <div className="flex gap-4">
+                  {selectedJob.companyLogo && (
+                    <div className="shrink-0">
+                      <img src={selectedJob.companyLogo} alt={`${selectedJob.title} logo`} className="w-12 h-12 rounded-lg object-contain border border-border bg-white" />
+                    </div>
+                  )}
+                  <div>
+                    <span className="inline-block rounded-full bg-brand-soft px-2.5 py-0.5 text-[0.65rem] font-bold text-accent">
+                      {selectedJob.department}
+                    </span>
+                    <h2 className="mt-1.5 text-lg font-extrabold text-primary sm:text-xl">
+                      {selectedJob.title}
+                    </h2>
+                    <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[0.7rem] text-muted-foreground">
+                      <span className="flex items-center gap-1"><MapPin className="size-3 text-accent" />{selectedJob.location}</span>
+                      <span className="flex items-center gap-1"><Briefcase className="size-3 text-accent" />{selectedJob.type} · {selectedJob.experience}</span>
+                      <span className="flex items-center gap-1 font-bold text-primary"><IndianRupee className="size-3 text-accent" />{selectedJob.salary}</span>
+                    </div>
                   </div>
                 </div>
                 <button
@@ -701,6 +817,23 @@ export function CareersPage() {
               </div>
 
               <div className="p-6">
+                {/* External Form / Google Form Alert Button */}
+                {selectedJob.applyUrl && (
+                  <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200">
+                    <h4 className="text-xs font-extrabold text-purple-950 mb-1">Direct Google Form / External Application</h4>
+                    <p className="text-[11px] text-purple-700 mb-3">You can fill out the official candidate form provided by the recruiter directly:</p>
+                    <a
+                      href={selectedJob.applyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-xs font-bold text-white shadow-md transition-all hover:bg-purple-700 hover:scale-[1.01]"
+                    >
+                      <ExternalLink className="size-4" />
+                      <span>Open Official Google Form in New Tab</span>
+                    </a>
+                  </div>
+                )}
+
                 {/* Job details */}
                 <div className="space-y-4 text-xs text-muted-foreground">
                   <div>
@@ -771,6 +904,37 @@ export function CareersPage() {
                     </div>
                   </div>
 
+                  {/* Dynamic Custom Form Fields */}
+                  {selectedJob.customFields && selectedJob.customFields.length > 0 && (
+                    <div className="space-y-3 pt-2 border-t border-border/40">
+                      <h4 className="text-xs font-extrabold text-primary uppercase tracking-wider">Additional Questions</h4>
+                      {selectedJob.customFields.map((field) => (
+                        <div key={field.id}>
+                          <label className="mb-1 block text-xs font-bold text-primary">
+                            {field.label} {field.required && <span className="text-red-500">*</span>}
+                          </label>
+                          {field.type === "textarea" ? (
+                            <textarea
+                              required={field.required}
+                              rows={2}
+                              value={customAnswers[field.label] || ""}
+                              onChange={(e) => setCustomAnswers({ ...customAnswers, [field.label]: e.target.value })}
+                              className="w-full rounded-xl border border-border bg-background p-2.5 text-xs text-primary focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition"
+                            />
+                          ) : (
+                            <input
+                              type={field.type === "url" ? "url" : field.type === "number" ? "number" : "text"}
+                              required={field.required}
+                              value={customAnswers[field.label] || ""}
+                              onChange={(e) => setCustomAnswers({ ...customAnswers, [field.label]: e.target.value })}
+                              className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-xs text-primary focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition"
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {/* File upload */}
                   <label className="block cursor-pointer">
                     <span className="mb-1 block text-xs font-bold text-primary">Upload CV / Resume</span>
@@ -781,7 +945,14 @@ export function CareersPage() {
                     <input type="file" accept=".pdf,.doc,.docx" className="hidden"
                       onChange={(e) => {
                         const f = e.target.files?.[0];
-                        if (f) setFormData({ ...formData, fileName: f.name });
+                        if (f) {
+                          if (f.size > 2 * 1024 * 1024) {
+                            toast.error("File size must be 2MB or less.");
+                            return;
+                          }
+                          setFormData({ ...formData, fileName: f.name });
+                          setCvFile(f);
+                        }
                       }} />
                   </label>
 

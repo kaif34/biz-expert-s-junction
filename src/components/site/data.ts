@@ -392,6 +392,9 @@ export interface JobOpening {
   responsibilities: string[];
   requirements: string[];
   skills: string[];
+  applyUrl?: string;
+  companyLogo?: string;
+  customFields?: Array<{ id: string; label: string; type: string; required: boolean }>;
 }
 
 export const CAREER_JOBS: JobOpening[] = [
